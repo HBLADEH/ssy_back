@@ -1,12 +1,18 @@
 package com.pjboy.ssy_back.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pjboy.ssy_back.config.filter.JwtAuthenticationTokenFilter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 
 /**
@@ -35,10 +41,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   @Autowired
   private ObjectMapper objectMapper;
 
+  @Autowired
+  private JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;
+
+  @Bean(name = BeanIds.AUTHENTICATION_MANAGER)
+  @Override
+  public AuthenticationManager authenticationManagerBean() throws Exception {
+    return super.authenticationManagerBean();
+  }
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
-    //http.csrf().disable()
+    http.csrf().disable();
     //        .formLogin()
     //        //.loginPage("/login") // 用户未登录时，访问任何资源都转跳到该路径，即登录页面
     //        .loginProcessingUrl("/login") // 登录表单form中action的地址，也就是处理认证请求的路径
@@ -53,8 +67,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     //        //.antMatchers("/syslog","/sysuser")
     //        //.hasAnyRole("admin")  //admin角色可以访问
     //        .anyRequest().authenticated();
+
     http
-            .authenticationProvider(authenticationProvider());
+            .authenticationProvider(authenticationProvider())
+            .sessionManagement()
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .and()
+            .addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
+
   }
 
   private AuthenticationProvider authenticationProvider() {

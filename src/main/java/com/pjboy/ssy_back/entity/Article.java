@@ -1,4 +1,4 @@
-package entity;
+package com.pjboy.ssy_back.entity;
 
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 

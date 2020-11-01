@@ -5,6 +5,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * @program: ssy_back
@@ -14,38 +15,27 @@ import java.util.Collection;
  **/
 @Component
 public class CustomUserDetails implements UserDetails {
-
-  private static final long serialVersionUID = 1L;
-
-  // 登录用户名
-  private String username;
-
-  // 登录密码
-  private String password;
-
-  private Collection<? extends  GrantedAuthority> authorities;
-
-  public void setUsername(String username) {
-    this.username = username;
-  }
-
-  public void setPassword(String password) {
-    this.password = password;
-  }
+  String password; // 密码
+  String username; // 用户名
+  boolean accountNonExpired; // 账号是否过期
+  boolean accountNonLocked; // 是否未锁定
+  boolean credentialsNonExpired; // 是否未过期
+  boolean enabled; // 账号是否可用
+  Collection <? extends GrantedAuthority> authorities; // 用户的权限集合
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    return null;
+    return authorities;
   }
 
   @Override
   public String getPassword() {
-    return this.password;
+    return password;
   }
 
   @Override
   public String getUsername() {
-    return this.username;
+    return username;
   }
 
   @Override
@@ -65,6 +55,10 @@ public class CustomUserDetails implements UserDetails {
 
   @Override
   public boolean isEnabled() {
-    return true;
+    return enabled;
+  }
+
+  public void setAuthorities(Collection<? extends GrantedAuthority> authorities) {
+    this.authorities = authorities;
   }
 }

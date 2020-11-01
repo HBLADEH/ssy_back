@@ -1,11 +1,14 @@
 package com.pjboy.ssy_back.util;
 
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -113,11 +116,14 @@ public class JwtTokenUtil {
   * @Date: 2020/10/24
   */
   private String generateToken(Map<String, Object> claims) {
-    Date expirationDate = new Date(System.currentTimeMillis() + expiration);
-    return Jwts.builder().setClaims(claims)
-            .setExpiration(expirationDate)
-            .signWith(SignatureAlgorithm.HS512,secret)
-            .compact();
+    byte[] keyBytes = Decoders.BASE64.decode(secret);
+    Key key = Keys.hmacShaKeyFor(keyBytes);
+    return Jwts.builder().setClaims(claims).signWith(key).compact();
+    //Date expirationDate = new Date(System.currentTimeMillis() + expiration);
+    //return Jwts.builder().setClaims(claims)
+    //        .setExpiration(expirationDate)
+    //        .signWith()
+    //        .compact();
   }
 
   /**
@@ -128,9 +134,16 @@ public class JwtTokenUtil {
   * @Date: 2020/10/24
   */
   private Claims getClaimsFromToken(String token) {
+    //Claims claims;
+    //try {
+    //  claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+    //} catch (Exception e) {
+    //  claims = null;
+    //}
+    //return claims;
     Claims claims;
     try {
-      claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+      claims = Jwts.parserBuilder().setSigningKey(secret).build().parseClaimsJws(token).getBody();
     } catch (Exception e) {
       claims = null;
     }

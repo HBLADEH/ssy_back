@@ -9,10 +9,15 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.BeanIds;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import javax.annotation.Resource;
 
 
 /**
@@ -32,22 +37,28 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-  @Autowired
-  private CustomPasswordEncode passwordEncode;
 
-  @Autowired
+  @Resource
   private CustomUserDetailsService userDetailsService;
 
   @Autowired
-  private ObjectMapper objectMapper;
-
-  @Autowired
   private JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;
+
 
   @Bean(name = BeanIds.AUTHENTICATION_MANAGER)
   @Override
   public AuthenticationManager authenticationManagerBean() throws Exception {
     return super.authenticationManagerBean();
+  }
+
+  @Bean("passwordEncoder")
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
+
+  @Override
+  protected void configure(AuthenticationManagerBuilder builder) throws Exception {
+    builder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
   }
 
   @Override
@@ -69,7 +80,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     //        .anyRequest().authenticated();
 
     http
-            .authenticationProvider(authenticationProvider())
+            .authorizeRequests()
+            .antMatchers("/authentication").permitAll()
+            .anyRequest().access("@rbacService.hasPermission(request, authentication)")
+
+            .and()
             .sessionManagement()
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
@@ -81,7 +96,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
     // 对默认的 UserDetailsService 进行覆盖
     authenticationProvider.setUserDetailsService(userDetailsService);
-    authenticationProvider.setPasswordEncoder(passwordEncode);
+    authenticationProvider.setPasswordEncoder(passwordEncoder());
+
     return authenticationProvider;
   }
+
 }

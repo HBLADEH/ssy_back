@@ -45,7 +45,7 @@ public class JwtAuthService {
       Authentication authentication = authenticationManager.authenticate(upToken);
       SecurityContextHolder.getContext().setAuthentication(authentication);
     } catch (AuthenticationException e) {
-      throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, "用户名或密码不正确");
+      throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, e.getMessage());
     }
 
     // 生成 jwt

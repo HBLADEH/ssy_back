@@ -1,6 +1,7 @@
 package com.pjboy.ssy_back.entity;
 
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -12,6 +13,7 @@ import java.util.Date;
  * @since 2020-10-29 00:51:25
  */
 @SuppressWarnings("serial")
+@Data
 public class Article extends Model<Article> {
   //ID
   private Integer id;
@@ -27,63 +29,6 @@ public class Article extends Model<Article> {
   private Date newsTime;
   //添加时间
   private Date addTime;
-
-
-  public Integer getId() {
-    return id;
-  }
-
-  public void setId(Integer id) {
-    this.id = id;
-  }
-
-  public String getTitle() {
-    return title;
-  }
-
-  public void setTitle(String title) {
-    this.title = title;
-  }
-
-  public String getKeyList() {
-    return keyList;
-  }
-
-  public void setKeyList(String keyList) {
-    this.keyList = keyList;
-  }
-
-  public String getIntroduction() {
-    return introduction;
-  }
-
-  public void setIntroduction(String introduction) {
-    this.introduction = introduction;
-  }
-
-  public Integer getArticleInfoId() {
-    return articleInfoId;
-  }
-
-  public void setArticleInfoId(Integer articleInfoId) {
-    this.articleInfoId = articleInfoId;
-  }
-
-  public Date getNewsTime() {
-    return newsTime;
-  }
-
-  public void setNewsTime(Date newsTime) {
-    this.newsTime = newsTime;
-  }
-
-  public Date getAddTime() {
-    return addTime;
-  }
-
-  public void setAddTime(Date addTime) {
-    this.addTime = addTime;
-  }
 
   /**
    * 获取主键值

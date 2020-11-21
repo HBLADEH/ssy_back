@@ -75,13 +75,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     //        .antMatchers("/login").permitAll() // 不需要通过登录验证就可以被访问的资源路径
     //        .antMatchers("/index") //需要对外暴露的资源路径
     //        .hasAnyAuthority("ROLE_user", "ROLE_admin") // user角色和admin角色都可以访问
-    //        //.antMatchers("/syslog","/sysuser")
+    //        //.antMatchers("/syslog","/sysUser")
     //        //.hasAnyRole("admin")  //admin角色可以访问
     //        .anyRequest().authenticated();
 
     http
             .authorizeRequests()
-            .antMatchers("/authentication").permitAll()
+            .antMatchers("/authentication","/article/main").permitAll()
             .anyRequest().access("@rbacService.hasPermission(request, authentication)")
 
             .and()

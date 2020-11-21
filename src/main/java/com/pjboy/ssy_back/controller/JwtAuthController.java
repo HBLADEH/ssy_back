@@ -36,8 +36,11 @@ public class JwtAuthController {
       );
     }
     try {
-      return AjaxResponse.success(jwtAuthService.login(username, password));
+      return AjaxResponse.success(jwtAuthService.login(username, password), "登录成功!");
     } catch (CustomException e) {
+      if (e.getMessage().equals("Bad credentials")) {
+        e = new CustomException(CustomExceptionType.USER_INPUT_ERROR);
+      }
       return AjaxResponse.error(e);
     }
   }
